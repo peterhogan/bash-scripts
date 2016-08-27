@@ -1,0 +1,56 @@
+#!/bin/bash
+FILE=$1
+PWD=$(pwd)
+CHECK=1
+
+echo "Installing package: $1"
+echo "Examine the commands before continuing:"
+echo "tar xvf $FILE"
+echo "cd ${FILE%%.tar*}"
+echo "./configure --prefix=/tools"
+echo "make"
+echo "make check"
+echo "make install"
+echo "cd $PWD"
+echo "rm -rvf $PWD/${FILE%%.tar*}"
+
+#while true; do
+#        read -p "Are you sure you want to install $1? " yn
+#        case $yn in 
+#                [Yy]* ) break;;
+#                * ) exit;; 
+#        esac
+#done
+
+while true; do
+        read -p "Run checks? " yn
+        case $yn in 
+                [Yy]* ) CHECK=1; break;;
+                [Nn]* ) CHECK=0; break;; 
+        esac
+done
+
+time {
+tar xvf $FILE
+cd ${FILE%%.tar*}
+echo "*************** configuring package **************"
+./configure --prefix=/tools
+echo "************** running make **************"
+make
+
+if [ $CHECK = 1 ]; then
+	echo "************** make completed, running make check**************"
+	make check 
+	echo "************** check completed, running make install ************
+else
+	echo "************** make completed, running make install ************
+fi
+
+make install 
+echo "************** make install completed.. cleaning up **************"
+cd ..
+rm -rvf "$PWD"/"${FILE%%.tar*}"
+echo "cleaned files.."
+}
+
+echo "Package $1 installed succesfully!"
