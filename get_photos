@@ -1,0 +1,10 @@
+#!/bin/bash
+
+prefix=getphotolog
+suffix=$(date +%s)
+filename=$prefix$suffix.log
+logfile="/home/juniper/script/get_photo-logs/$filename"
+dest="/home/photos/"
+
+
+wget -m -o $logfile -P $dest ftp://admin:admin@192.168.0.4/Public/Shared\ Pictures

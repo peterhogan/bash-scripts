@@ -1,0 +1,18 @@
+#!/bin/bash
+PASSES=500	# number of particles
+ROWS=10		# number of collisions
+RANGE=3		# 0 - 2 output range from $RANDOM
+POS=0 		# left/right posn
+RANDOM=$$	# seed the random num gen from PID of script
+
+declare -a Slots	# array holding cumulative results of passes
+NUMSLOTS=21		#num of slots on board
+
+Initialize_Slots () {
+for i in $( seq $NUMSLOTS )
+do
+	Slots[$i]=0
+done
+
+echo
+	}

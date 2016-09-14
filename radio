@@ -1,0 +1,7 @@
+#!/bin/bash                             
+
+#FILE="http://stereoscenic.com/pls/pill-hi-mp3.pls"
+FILE="http://somafm.com/dronezone130.pls"
+
+echo "Running the radio script"
+mplayer -playlist $FILE

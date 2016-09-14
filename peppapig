@@ -1,0 +1,5 @@
+#!/bin/bash
+
+PEPPA=`shuf -n 1 ~/scripts/peppa.txt`
+
+omxplayer -b -o hdmi $PEPPA

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+STAT_SCREEN="xrandr --output LVDS1 --off --output VGA1 --auto"
+STAT_WIFI="sudo netctl stop sky"
+ROAM_SCREEN="xrandr --output LVDS1 --auto --output VGA1 --off"
+ROAM_WIFI="sudo netctl start sky"
+
+while getopts ":l" opt; do
+	case $opt in
+		l)
+			echo "Listing profiles..." >&2
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			;;
+	esac
+done
+
+if [ "$1" == "static" ] ; then
+	echo "You want to be static - connecting external VGA and disconnecting WiFi"
+	$STAT_SCREEN
+	$STAT_WIFI
+	
+elif [ "$1" == "roaming" ] ; then
+	echo "You want to be roaming - disconnecting external VGA and starting Wifi."
+	$ROAM_SCREEN
+	$ROAM_WIFI
+	
+else
+	echo "Please enter a valid profile"
+fi

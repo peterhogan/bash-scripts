@@ -1,0 +1,6 @@
+#!/bin/bash
+
+TODAY=`date -u +%d-%m-%Y`
+FILE="$TODAY.txt"
+
+vim ~/notes/$FILE
