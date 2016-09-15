@@ -1,56 +1,83 @@
 #!/bin/bash
-FILE=$1
 PWD=$(pwd)
-CHECK=1
+CHECK=0
+TIMER=0
+PRINT=0
+CONFIG=""
 
-echo "Installing package: $1"
-echo "Examine the commands before continuing:"
-echo "tar xvf $FILE"
-echo "cd ${FILE%%.tar*}"
-echo "./configure --prefix=/tools"
-echo "make"
-echo "make check"
-echo "make install"
-echo "cd $PWD"
-echo "rm -rvf $PWD/${FILE%%.tar*}"
-
-#while true; do
-#        read -p "Are you sure you want to install $1? " yn
-#        case $yn in 
-#                [Yy]* ) break;;
-#                * ) exit;; 
-#        esac
-#done
-
-while true; do
-        read -p "Run checks? " yn
-        case $yn in 
-                [Yy]* ) CHECK=1; break;;
-                [Nn]* ) CHECK=0; break;; 
+while getopts ":tcpa:" opt; do
+        case $opt in
+                t)
+                        echo "Setting timer"
+                        TIMER=1
+                        ;;
+                p)
+                        echo "Printing commands before running..."
+                        PRINT=1
+                        ;;
+                c)
+                        echo "Running checks..."
+                        CHECK=1
+                        ;;
+                a)
+                        echo "Appending configure file with: $OPTARG" >&2
+                        CONFIG=$OPTARG
+                        ;;
+                \?)
+                        echo "Invalid option: -$OPTARG" >&2
+                        ;;
+                :)
+                        echo "Option -$OPTARG requires an argument." >&2
+                        exit 1
+                        ;;
         esac
 done
 
-time {
-tar xvf $FILE
-cd ${FILE%%.tar*}
-echo "*************** configuring package **************"
-./configure --prefix=/tools
-echo "************** running make **************"
-make
+shift $((OPTIND-1))
 
-if [ $CHECK = 1 ]; then
-	echo "************** make completed, running make check**************"
-	make check 
-	echo "************** check completed, running make install ************
-else
-	echo "************** make completed, running make install ************
-fi
+while [ $# -ne 0 ]; do
+        FILE=$1
 
-make install 
-echo "************** make install completed.. cleaning up **************"
-cd ..
-rm -rvf "$PWD"/"${FILE%%.tar*}"
-echo "cleaned files.."
-}
+        if [ $PRINT = 1 ]; then
+                echo "Installing package: $1"
+                echo "Examine the commands before continuing:"
+                echo "tar xvf $FILE"
+                echo "cd ${FILE%%.tar*}"
+                echo "./configure --prefix=/usr $CONFIG"
+                echo "make"
+                if [ $CHECK = 1 ]; then
+                        echo "make check"
+                fi
+                echo "make install"
+                echo "cd $PWD"
+                echo "rm -rvf $PWD/${FILE%%.tar*}"
 
-echo "Package $1 installed succesfully!"
+                while true; do
+                        read -p "Are you sure you want to install $1? " yn
+                        case $yn in 
+                                [Yy]* ) break;;
+                                * ) exit;; 
+                        esac
+                done
+        fi
+
+        time {
+
+        tar xvf $FILE
+        cd ${FILE%%.tar*}
+
+        ./configure --prefix=/usr $CONFIG
+        make
+
+        if [ $CHECK = 1 ]; then
+                make check 
+        fi
+
+        make install
+
+        cd ..
+        rm -rvf "$PWD"/"${FILE%%.tar*}"
+        }
+        echo "Package $1 installed succesfully!"
+        break
+done
