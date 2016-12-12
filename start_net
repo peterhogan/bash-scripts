@@ -4,13 +4,25 @@
 NW_LOG_FILE=/var/log/networkscriptlog/$(date +%s)-network-debug.log
 WPA_CONF_FILE=/etc/wpa_supplicant/sky.conf
 
-echo "Starting network" $WPA_CONF_FILE
+while getopts ":c:" opt; do
+	case $opt in
+		c)
+			if [ -f $OPTARG ]; then
+				echo "Using config file $OPTARG"
+				WPA_CONF_FILE=$OPTARG
+			else
+				echo "No such file: exiting"
+				exit 1
+			fi
+	esac
+done
+echo "Starting network $WPA_CONF_FILE"
 wpa_supplicant -t -dd -f $NW_LOG_FILE -B -i wlp10s0 -c $WPA_CONF_FILE
 echo "Starting dhcpcd"
 dhcpcd -4 wlp10s0 &> $NW_LOG_FILE
 if [ $(curl --silent -o /dev/null google.com | echo ${PIPESTATUS}) = 0 ]; then
 	echo "Connected to google.com"
 else
-	echo "Error with connection - look at" $NW_LOG_FILE
+	echo "Error with connection - look at $NW_LOG_FILE"
 fi
 echo "Script finished"
