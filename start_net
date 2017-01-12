@@ -2,7 +2,7 @@
 
 # Set variables
 NW_LOG_FILE=/var/log/networkscriptlog/$(date +%s)-network-debug.log
-WPA_CONF_FILE=/etc/wpa_supplicant/sky.conf
+#WPA_CONF_FILE=/etc/wpa_supplicant/sky.conf
 
 while getopts ":c:" opt; do
 	case $opt in
@@ -25,4 +25,4 @@ if [ $(curl --silent -o /dev/null google.com | echo ${PIPESTATUS}) = 0 ]; then
 else
 	echo "Error with connection - look at $NW_LOG_FILE"
 fi
-echo "Script finished"
+echo "Script finished - log file: $NW_LOG_FILE"
